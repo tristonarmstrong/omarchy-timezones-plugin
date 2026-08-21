@@ -37,8 +37,12 @@ omarchy plugin add https://github.com/sspaeti/omarchy-timezones-plugin.git --ena
 
 ## Configure
 
-All zones are configured on the widget entry in `~/.config/omarchy/shell.json`
-(hot-reloads on save). Example:
+Works out of the box with no configuration: the home row is **Omarchy's
+system timezone** (whatever `omarchy` / `timedatectl` is set to), labeled by
+its city, plus US East Coast and West Coast as example client zones.
+
+To pick your own zones and labels, configure the widget entry in
+`~/.config/omarchy/shell.json` (hot-reloads on save). Example:
 
 ```json
 {
