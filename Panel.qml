@@ -149,19 +149,20 @@ Panel {
     }
   }
 
+  // Offsets can only change at wall-clock hour boundaries (DST switches) or
+  // when the clock jumps (suspend/resume, timezone changed while traveling),
+  // so re-probe exactly then rather than on a polling interval.
   SystemClock {
     precision: SystemClock.Minutes
-    onDateChanged: root.nowUtc = date.getTime()
+    onDateChanged: {
+      var previous = root.nowUtc
+      root.nowUtc = date.getTime()
+      if (date.getMinutes() === 0 || Math.abs(root.nowUtc - previous) > 120000)
+        root.refresh()
+    }
   }
 
-  // Offsets only move on DST switches; a slow re-probe keeps them honest.
-  Timer {
-    interval: 15 * 60 * 1000
-    running: true
-    repeat: true
-    triggeredOnStart: true
-    onTriggered: root.refresh()
-  }
+  Component.onCompleted: root.refresh()
 
   KeyboardPanel {
     id: panel
