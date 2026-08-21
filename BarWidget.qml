@@ -20,6 +20,10 @@ BarWidget {
   // wants.
   readonly property bool hoverExpand: setting("hoverExpand", true) === true
 
+  // What the right button does: open worldtimebuddy (the default) or flip the
+  // widget between 24-hour and AM/PM.
+  readonly property string rightClick: String(setting("rightClick", "worldtimebuddy"))
+
   readonly property string compact: panelLoader.item ? panelLoader.item.compactLabel : ""
 
   // Hover is tracked on the whole pill, not just the icon button: once the
@@ -50,9 +54,24 @@ BarWidget {
     if (panelLoader.item && panelLoader.item.toggle) panelLoader.item.toggle()
   }
 
+  // A bar surface exists per monitor, so flip every instance — otherwise the
+  // format would change on one screen and not the others.
+  function toggleHourFormat() {
+    broadcast("toggleHourFormatHere")
+  }
+
+  function toggleHourFormatHere() {
+    if (panelLoader.item && panelLoader.item.toggleHourFormat) panelLoader.item.toggleHourFormat()
+  }
+
+  function runRightClick() {
+    if (root.rightClick === "toggleHourFormat") root.toggleHourFormat()
+    else root.bar.run("omarchy-launch-browser " + Util.shellQuote(root.wtbUrl))
+  }
+
   function handlePress(b) {
     if (!root.bar) return
-    if (b === Qt.RightButton) root.bar.run("omarchy-launch-browser " + Util.shellQuote(root.wtbUrl))
+    if (b === Qt.RightButton) root.runRightClick()
     else if (b === Qt.MiddleButton) root.refresh()
     else root.togglePanel()
   }
@@ -104,6 +123,7 @@ BarWidget {
     function hide(): void { root.close() }
     function toggle(): void { root.togglePanel() }
     function refresh(): void { root.refresh() }
+    function toggleHourFormat(): void { root.toggleHourFormat() }
   }
 
   HoverHandler { id: pillHover }

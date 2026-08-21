@@ -40,7 +40,8 @@ omarchy plugin add https://github.com/sspaeti/omarchy-timezones-plugin.git --ena
 - **Left click**: open/close the hour-grid popup (Escape also closes)
 - **Hover a column** in the popup: converts that moment across all zones
 - **Middle click**: refresh timezone offsets
-- **Right click**: open worldtimebuddy.com in the browser
+- **Right click**: open worldtimebuddy.com in the browser, or toggle 24-hour
+  vs AM/PM — see `rightClick` below
 
 ## Configure
 
@@ -79,6 +80,12 @@ To pick your own zones and labels, configure the widget entry in
   expanding to the compact times on hover (the expansion shifts neighboring
   widgets, which not everyone wants). Default `true`.
 - `worldtimebuddyUrl` — right-click target.
+- `hourFormat` — `"24h"` (default) or `"12h"`. Sets how the bar's hover view,
+  the popup's row times, and the hour grid read the clock.
+- `rightClick` — what the right button does: `"worldtimebuddy"` (default)
+  opens `worldtimebuddyUrl`, `"toggleHourFormat"` flips between 24-hour and
+  AM/PM instead. The toggle lasts for the session; `hourFormat` decides where
+  it starts.
 
 Move it in the bar:
 

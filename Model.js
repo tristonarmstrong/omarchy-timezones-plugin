@@ -75,10 +75,24 @@ function pad2(n) {
   return (n < 10 ? "0" : "") + n
 }
 
-// "07:12" for a zone right now.
-function timeLabel(nowUtcMs, offsetMin) {
+// 0 → 12, 13 → 1: the hour as a 12-hour clock reads it.
+function hour12(hour) {
+  var h = hour % 12
+  return h === 0 ? 12 : h
+}
+
+// "07:12" for a zone right now, or "7:12 AM" in 12-hour mode.
+function timeLabel(nowUtcMs, offsetMin, use12Hour) {
   var f = localFields(nowUtcMs, offsetMin)
-  return pad2(f.hour) + ":" + pad2(f.minute)
+  if (!use12Hour) return pad2(f.hour) + ":" + pad2(f.minute)
+  return hour12(f.hour) + ":" + pad2(f.minute) + (f.hour < 12 ? " AM" : " PM")
+}
+
+// One grid cell's hour. The 12-hour form stays as short as worldtimebuddy's
+// ("1p", "11a") because a cell is only wide enough for three characters.
+function hourLabel(hour, use12Hour) {
+  if (!use12Hour) return String(hour)
+  return hour12(hour) + (hour < 12 ? "a" : "p")
 }
 
 // "Thu 21 Aug" style date for the row header.
@@ -105,12 +119,12 @@ function nowColumn(nowUtcMs, dayStartUtcMs) {
 }
 
 // Compact bar label shown on hover: "NY 07:12 · SF 04:12 · CDO 19:12".
-function compactLabel(zones, nowUtcMs) {
+function compactLabel(zones, nowUtcMs, use12Hour) {
   var parts = []
   for (var i = 0; i < zones.length; i++) {
     var z = zones[i]
     if (z.home || z.offsetMin === undefined || z.offsetMin === null) continue
-    parts.push(plainText(z.shortLabel) + " " + timeLabel(nowUtcMs, z.offsetMin))
+    parts.push(plainText(z.shortLabel) + " " + timeLabel(nowUtcMs, z.offsetMin, use12Hour))
   }
   return parts.join(" · ")
 }
@@ -134,7 +148,9 @@ if (typeof module !== "undefined") {
     localFields: localFields,
     cell: cell,
     tintFor: tintFor,
+    hour12: hour12,
     timeLabel: timeLabel,
+    hourLabel: hourLabel,
     dateLabel: dateLabel,
     diffLabel: diffLabel,
     nowColumn: nowColumn,

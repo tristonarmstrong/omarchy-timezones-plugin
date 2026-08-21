@@ -67,6 +67,16 @@ Panel {
   property var offsets: ({})
   property string systemTz: ""
 
+  // 12-hour vs 24-hour. Seeded from the "hourFormat" setting and then owned
+  // by the widget, so a right-click toggle can flip it for the session
+  // without a shell.json edit.
+  readonly property bool configured12Hour: String(setting("hourFormat", "24h")).toLowerCase() === "12h"
+  property bool use12Hour: configured12Hour
+
+  function toggleHourFormat() {
+    use12Hour = !use12Hour
+  }
+
   readonly property var zoneConfig: setting("zones", Model.defaultZones())
   // System timezones that keep the configured home label. Outside this list
   // (or with none configured) the home row is labeled by where the system
@@ -112,7 +122,7 @@ Panel {
   property int hoverCol: -1
 
   // What the bar pill shows on hover.
-  readonly property string compactLabel: ready ? Model.compactLabel(zones, nowUtc) : ""
+  readonly property string compactLabel: ready ? Model.compactLabel(zones, nowUtc, use12Hour) : ""
 
   // ---- Grid geometry.
   readonly property real cellW: Style.space(27)
@@ -244,8 +254,8 @@ Panel {
                 Text {
                   text: !zoneItem.rowReady ? "—"
                     : root.hoverCol >= 0
-                      ? Model.timeLabel(root.dayStart + root.hoverCol * 3600000, zoneItem.zoneRow.offsetMin)
-                      : Model.timeLabel(root.nowUtc, zoneItem.zoneRow.offsetMin)
+                      ? Model.timeLabel(root.dayStart + root.hoverCol * 3600000, zoneItem.zoneRow.offsetMin, root.use12Hour)
+                      : Model.timeLabel(root.nowUtc, zoneItem.zoneRow.offsetMin, root.use12Hour)
                   color: root.hoverCol >= 0 ? Color.accent : root.fg
                   font.family: root.fontFam
                   font.pixelSize: Style.font.body
@@ -292,7 +302,7 @@ Panel {
                     anchors.centerIn: parent
                     horizontalAlignment: Text.AlignHCenter
                     lineHeight: 0.85
-                    text: c.isMidnight ? c.dayLabel.replace(" ", "\n") : String(c.hour)
+                    text: c.isMidnight ? c.dayLabel.replace(" ", "\n") : Model.hourLabel(c.hour, root.use12Hour)
                     color: c.isMidnight ? root.fg
                          : c.tint === "night" ? Qt.darker(root.fg, 1.6)
                          : root.fg
