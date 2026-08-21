@@ -75,6 +75,9 @@ To pick your own zones and labels, configure the widget entry in
   Outside this list (traveling), the home row is relabeled by where the system
   clock actually is. Empty (default): always label by the system timezone.
 - `icon` — bar glyph (default `󰇧`).
+- `hoverExpand` — set `false` to keep the bar pill a static icon instead of
+  expanding to the compact times on hover (the expansion shifts neighboring
+  widgets, which not everyone wants). Default `true`.
 - `worldtimebuddyUrl` — right-click target.
 
 Move it in the bar:
