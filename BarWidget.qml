@@ -21,7 +21,17 @@ BarWidget {
   readonly property bool hoverExpand: setting("hoverExpand", true) === true
 
   readonly property string compact: panelLoader.item ? panelLoader.item.compactLabel : ""
-  readonly property bool expanded: hoverExpand && !vertical && button.tooltipHovered && compact !== ""
+
+  // Hover is tracked on the whole pill, not just the icon button: once the
+  // times are out, the pointer is free to travel across them without the
+  // pill collapsing out from under it.
+  readonly property bool pillHovered: button.tooltipHovered || pillHover.hovered
+  readonly property bool expanded: hoverExpand && !vertical && pillHovered && compact !== ""
+
+  // Gap between the icon button and the times, and the padding that keeps the
+  // times off the next widget — the button only pads its own glyph.
+  readonly property real revealLeadIn: Style.spaceReal(10)
+  readonly property real revealTrail: button.scaledHorizontalMargin
 
   function injectPanel() {
     var target = panelLoader.item
@@ -38,6 +48,13 @@ BarWidget {
 
   function togglePanel() {
     if (panelLoader.item && panelLoader.item.toggle) panelLoader.item.toggle()
+  }
+
+  function handlePress(b) {
+    if (!root.bar) return
+    if (b === Qt.RightButton) root.bar.run("omarchy-launch-browser " + Util.shellQuote(root.wtbUrl))
+    else if (b === Qt.MiddleButton) root.refresh()
+    else root.togglePanel()
   }
 
   // Shape contract for shell.summon/hide/toggle routing (Bar.findPanelWidget
@@ -61,7 +78,7 @@ BarWidget {
     if (panelLoader.item) panelLoader.item.closeForPopoutSwitch()
   }
 
-  implicitWidth: button.implicitWidth
+  implicitWidth: button.implicitWidth + reveal.width
   implicitHeight: button.implicitHeight
 
   onBarChanged: injectPanel()
@@ -89,18 +106,66 @@ BarWidget {
     function refresh(): void { root.refresh() }
   }
 
+  HoverHandler { id: pillHover }
+
+  // The button carries the glyph alone and never changes size. Folding the
+  // times into its label instead re-centers the label on every hover, and
+  // since the slack a centered label leaves depends on the string being
+  // measured, the globe visibly jumps sideways as the times appear.
   WidgetButton {
     id: button
-    anchors.fill: parent
+    anchors.left: parent.left
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    width: button.implicitWidth
     bar: root.bar
-    text: root.expanded ? root.icon + "   " + root.compact : root.icon
+    text: root.icon
     tooltipText: ""
 
-    onPressed: function(b) {
-      if (!root.bar) return
-      if (b === Qt.RightButton) root.bar.run("omarchy-launch-browser " + Util.shellQuote(root.wtbUrl))
-      else if (b === Qt.MiddleButton) root.refresh()
-      else root.togglePanel()
+    onPressed: function(b) { root.handlePress(b) }
+  }
+
+  // The times wipe out from behind the globe rather than appearing at full
+  // width, so the widgets downstream of the pill slide instead of jumping.
+  Item {
+    id: reveal
+    anchors.left: button.right
+    anchors.verticalCenter: button.verticalCenter
+    height: button.height
+    visible: !root.vertical
+    clip: true
+
+    width: root.expanded ? root.revealLeadIn + times.implicitWidth + root.revealTrail : 0
+
+    Behavior on width {
+      NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+    }
+
+    Text {
+      id: times
+      x: root.revealLeadIn
+      anchors.verticalCenter: parent.verticalCenter
+      text: root.compact
+      textFormat: Text.PlainText
+      color: root.bar ? root.bar.barForeground : Color.foreground
+      font.family: root.bar ? root.bar.fontFamily : Style.font.family
+      font.pixelSize: Style.font.body
+      renderType: Text.NativeRendering
+      opacity: root.expanded ? 1 : 0
+
+      Behavior on opacity {
+        NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+      }
+    }
+
+    // The revealed times stayed clickable when they were part of the button's
+    // label; keep them so.
+    MouseArea {
+      anchors.fill: parent
+      acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+      hoverEnabled: true
+      cursorShape: Qt.PointingHandCursor
+      onClicked: function(mouse) { root.handlePress(mouse.button) }
     }
   }
 }
