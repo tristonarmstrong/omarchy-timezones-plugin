@@ -16,10 +16,10 @@ row follows the **system timezone**, so when you travel and update Omarchy's
 timezone, the home row updates with you.
 
 Left Mouse Click Preview:
-![[preview.png]]
+![preview](preview.png)
 
 Hover Preview:
-![[preview-hover.png]]
+![preview hover](preview-hover.png)
 
 ## Install
 
