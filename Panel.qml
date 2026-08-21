@@ -88,10 +88,12 @@ Panel {
       // system actually is (e.g. "New York" while traveling).
       if (cfg.home && systemTz !== "" && homeZoneNames.indexOf(systemTz) === -1)
         label = systemTz.split("/").pop().replace(/_/g, " ")
+      // Config strings are sanitized here — the single source every
+      // consumer (panel texts, bar hover label) reads from.
       out.push({
-        label: label,
-        shortLabel: cfg.shortLabel || "",
-        abbr: cfg.abbr || (probed ? probed.abbr : ""),
+        label: Model.plainText(label),
+        shortLabel: Model.plainText(cfg.shortLabel || ""),
+        abbr: Model.plainText(cfg.abbr || (probed ? probed.abbr : "")),
         home: cfg.home === true,
         offsetMin: probed ? probed.offsetMin : null
       })
@@ -218,6 +220,7 @@ Panel {
 
                 Text {
                   text: zoneItem.zoneRow.label
+                  textFormat: Text.PlainText
                   color: root.fg
                   font.family: root.fontFam
                   font.pixelSize: Style.font.body
@@ -226,6 +229,7 @@ Panel {
                 Text {
                   visible: zoneItem.zoneRow.abbr !== ""
                   text: "(" + zoneItem.zoneRow.abbr + ")"
+                  textFormat: Text.PlainText
                   color: Qt.darker(root.fg, 1.5)
                   font.family: root.fontFam
                   font.pixelSize: Style.font.caption

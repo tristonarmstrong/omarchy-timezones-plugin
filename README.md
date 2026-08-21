@@ -76,6 +76,18 @@ Move it in the bar:
 omarchy bar move io.github.sspaeti.timezones --section center
 ```
 
+## How summer/winter time stays correct without syncing
+
+The system's IANA tzdata (`/usr/share/zoneinfo`) stores the transition
+*rules* — "EU switches on the last Sunday of March", "US on the second Sunday
+of March" — not just this year's dates, so every future switch is already
+computable offline. The plugin evaluates those rules for the current moment
+(`TZ=<zone> date`) on panel open, on middle-click, and every 15 minutes, so a
+DST switch is reflected within minutes of it happening. When a country
+changes its rules, the fix arrives through the regular `tzdata` package in
+normal system updates. Leap years are plain calendar math and need nothing
+special.
+
 ## Remove
 
 ```sh
