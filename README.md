@@ -3,6 +3,8 @@
 A minimal world clock for the [Omarchy](https://omarchy.org/) bar, inspired by
 [worldtimebuddy.com](https://www.worldtimebuddy.com/).
 
+🎬 **Showcase**: [omarchy-plugin-timezone.mp4](omarchy-plugin-timezone.mp4)
+
 A single globe icon in the bar expands to your zones' current times on hover.
 Clicking it opens an hour-grid popup: one 24-hour strip per timezone, all
 columns aligned on the same absolute moment, with business hours highlighted,
@@ -14,6 +16,11 @@ No network, no API: offsets and abbreviations come straight from the system's
 tzdata (`TZ=<zone> date`), so summer/winter time is always correct. The home
 row follows the **system timezone**, so when you travel and update Omarchy's
 timezone, the home row updates with you.
+
+The widget draws all its colors and fonts from the active Omarchy theme
+(bar foreground, accent, popup background), so it restyles instantly on
+`omarchy theme set <name>` — see it switch live in
+[the showcase video](omarchy-plugin-timezone.mp4).
 
 Left Mouse Click Preview:
 ![preview](preview.png)
