@@ -11,8 +11,10 @@ BarWidget {
   moduleName: "io.github.sspaeti.timezones"
 
   // Sanitized because WidgetButton's internal Text uses AutoText, which
-  // would rich-text-parse a crafted setting.
-  readonly property string icon: Model.plainText(setting("icon", "󰇧"))
+  // would rich-text-parse a crafted setting. See README's Configure section
+  // for why this glyph rather than the plain earth/globe ones, and for other
+  // icon choices.
+  readonly property string icon: Model.plainText(setting("icon", "󱉊"))
   readonly property string wtbUrl: setting("worldtimebuddyUrl", "https://www.worldtimebuddy.com/pdt-to-switzerland-bern")
 
   // Set "hoverExpand": false on the widget entry to keep the pill a static
