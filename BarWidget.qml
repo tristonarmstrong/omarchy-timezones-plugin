@@ -95,7 +95,12 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: root.expanded ? root.icon + "   " + root.compact : root.icon
+    // Keep WidgetButton as the interaction surface, but draw the icon and
+    // expanding label separately so centering a longer string cannot move the
+    // icon. The button grows only to the right of the icon's fixed position.
+    text: " "
+    fixedWidth: labelRow.implicitWidth + scaledHorizontalMargin * 2
+    foreground: "transparent"
     tooltipText: ""
 
     onPressed: function(b) {
@@ -103,6 +108,33 @@ BarWidget {
       if (b === Qt.RightButton) root.bar.run("omarchy-launch-browser " + Util.shellQuote(root.wtbUrl))
       else if (b === Qt.MiddleButton) root.refresh()
       else root.togglePanel()
+    }
+  }
+
+  Row {
+    id: labelRow
+    anchors.left: button.left
+    anchors.leftMargin: button.scaledHorizontalMargin
+    anchors.verticalCenter: button.verticalCenter
+    spacing: root.expanded ? Style.space(8) : 0
+
+    Text {
+      text: root.icon
+      textFormat: Text.PlainText
+      color: button.active && button.useActiveColor ? button.activeColor : (root.bar ? root.bar.barForeground : Color.foreground)
+      font.family: button.fontFamily
+      font.pixelSize: button.fontSize
+      renderType: Text.NativeRendering
+    }
+
+    Text {
+      visible: root.expanded
+      text: root.compact
+      textFormat: Text.PlainText
+      color: button.active && button.useActiveColor ? button.activeColor : (root.bar ? root.bar.barForeground : Color.foreground)
+      font.family: button.fontFamily
+      font.pixelSize: button.fontSize
+      renderType: Text.NativeRendering
     }
   }
 }
