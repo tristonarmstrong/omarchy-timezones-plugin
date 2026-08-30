@@ -190,31 +190,4 @@ BarWidget {
       onClicked: function(mouse) { root.handlePress(mouse.button) }
     }
   }
-
-  Row {
-    id: labelRow
-    anchors.left: button.left
-    anchors.leftMargin: button.scaledHorizontalMargin
-    anchors.verticalCenter: button.verticalCenter
-    spacing: root.expanded ? Style.space(8) : 0
-
-    Text {
-      text: root.icon
-      textFormat: Text.PlainText
-      color: button.active && button.useActiveColor ? button.activeColor : (root.bar ? root.bar.barForeground : Color.foreground)
-      font.family: button.fontFamily
-      font.pixelSize: button.fontSize
-      renderType: Text.NativeRendering
-    }
-
-    Text {
-      visible: root.expanded
-      text: root.compact
-      textFormat: Text.PlainText
-      color: button.active && button.useActiveColor ? button.activeColor : (root.bar ? root.bar.barForeground : Color.foreground)
-      font.family: button.fontFamily
-      font.pixelSize: button.fontSize
-      renderType: Text.NativeRendering
-    }
-  }
 }
