@@ -11,8 +11,10 @@ BarWidget {
   moduleName: "io.github.sspaeti.timezones"
 
   // Sanitized because WidgetButton's internal Text uses AutoText, which
-  // would rich-text-parse a crafted setting.
-  readonly property string icon: Model.plainText(setting("icon", "󰇧"))
+  // would rich-text-parse a crafted setting. See README's Configure section
+  // for why this glyph rather than the plain earth/globe ones, and for other
+  // icon choices.
+  readonly property string icon: Model.plainText(setting("icon", "󱉊"))
   readonly property string wtbUrl: setting("worldtimebuddyUrl", "https://www.worldtimebuddy.com/pdt-to-switzerland-bern")
 
   // Set "hoverExpand": false on the widget entry to keep the pill a static
@@ -186,6 +188,33 @@ BarWidget {
       hoverEnabled: true
       cursorShape: Qt.PointingHandCursor
       onClicked: function(mouse) { root.handlePress(mouse.button) }
+    }
+  }
+
+  Row {
+    id: labelRow
+    anchors.left: button.left
+    anchors.leftMargin: button.scaledHorizontalMargin
+    anchors.verticalCenter: button.verticalCenter
+    spacing: root.expanded ? Style.space(8) : 0
+
+    Text {
+      text: root.icon
+      textFormat: Text.PlainText
+      color: button.active && button.useActiveColor ? button.activeColor : (root.bar ? root.bar.barForeground : Color.foreground)
+      font.family: button.fontFamily
+      font.pixelSize: button.fontSize
+      renderType: Text.NativeRendering
+    }
+
+    Text {
+      visible: root.expanded
+      text: root.compact
+      textFormat: Text.PlainText
+      color: button.active && button.useActiveColor ? button.activeColor : (root.bar ? root.bar.barForeground : Color.foreground)
+      font.family: button.fontFamily
+      font.pixelSize: button.fontSize
+      renderType: Text.NativeRendering
     }
   }
 }
